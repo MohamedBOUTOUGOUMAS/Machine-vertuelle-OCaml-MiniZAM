@@ -1,0 +1,11 @@
+	CONST 3
+	PUSH
+	CONST 2
+	PUSH
+	ACC 0
+	PUSH
+	ACC 2
+	PRIM +
+	POP
+	POP
+	STOP
