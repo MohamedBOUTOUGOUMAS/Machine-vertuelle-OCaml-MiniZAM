@@ -11,18 +11,26 @@
 #include <iostream>
 #include <vector>
 #include "MlValue.h"
+#include "Ivalue.h"
 using namespace std;
 
 namespace minizam{
 
 
-class Environnement{
-	vector<MlValue> elements = vector<MlValue>();
+class Environnement : public IValue{
+
+	vector<IValue *> elements = vector<IValue *>();
+
 public:
 	Environnement(){}
-	vector<MlValue> getEnv(){return elements;}
-	void extends(MlValue v){elements.push_back(v);}
-	~Environnement(){}
+	Environnement(vector<IValue *> elements): elements(elements){}
+	vector<IValue *> getEnv(){return elements;}
+
+	int getValue(){}
+
+	void extends(IValue * v){elements.push_back(v);}
+
+	~Environnement(){ elements.~vector();}
 };
 
 }

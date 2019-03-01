@@ -20,16 +20,28 @@ class Programme{
 
 	vector<Instruction> prog = vector<Instruction>();
 public:
-	Programme(vector<Instruction> prog):prog(prog){}
+
+	Programme(vector<Instruction> prog):prog(prog){
+
+	}
+
 	vector<Instruction> getProg(){return prog;}
 
-	ostream & operator << (std::ostream & os) {
-		for(auto i:prog){
-			os<<i<<" ";
+	int position(string label){
+		for(int i=0; i<prog.size(); i++){
+			if(prog.at(i).isLabel()==1 && prog.at(i).getLabel() == label){
+				return i;
+			}
 		}
-		os<<endl;
-		return os;
+		return -1;
 	}
+//	ostream & operator << (std::ostream & os) {
+//		for(Instruction i:prog){
+//			os<<i<<" ";
+//		}
+//		return os;
+//	}
+
 };
 
 

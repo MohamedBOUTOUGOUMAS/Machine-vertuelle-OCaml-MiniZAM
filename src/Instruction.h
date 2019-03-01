@@ -33,8 +33,9 @@ namespace minizam{
 					attributes.push_back(*it2++);
 				}
 			}
-
-
+//			for(auto at : attributes){
+//				cout<<at<<endl;
+//			}
 
 		}
 
@@ -44,8 +45,10 @@ namespace minizam{
 
 		vector<string> getAttributes(){return attributes;}
 
+
 		bool isLabel(){
-			if(label == " "){
+			regex t{"\\s*"};
+			if(!regex_match(label,t)){
 				return true;
 			}
 			return false;

@@ -8,56 +8,56 @@
 #ifndef SRC_MLVALUE_H_
 #define SRC_MLVALUE_H_
 
-
+#include "Ivalue.h"
 namespace minizam{
 
-class MlValue{
-	int value;
+class MlValue : public IValue{
+	double value = 0;
 public:
-	MlValue(int v):value(v){}
+	MlValue(double v):value(v){}
 	int getValue(){return value;}
 	void setValue(int v){value = v;}
-	MlValue & operator + (MlValue val) {
-			return MlValue(this->value + val.getValue());
+	MlValue operator + (IValue * val) {
+		return MlValue(this->value + val->getValue());
 	}
-	MlValue & operator - (MlValue val) {
-			return MlValue(this->value - val.getValue());
+	MlValue operator - (IValue * val) {
+			return MlValue(this->value - val->getValue());
 	}
-	MlValue & operator * (MlValue val) {
-			return MlValue(this->value * val.getValue());
+	MlValue operator * (IValue * val) {
+			return MlValue(this->value * val->getValue());
 	}
-	MlValue & operator / (MlValue val) {
-			return MlValue(this->value / val.getValue());
-	}
-
-	MlValue AND(MlValue val){
-		return MlValue(this->value && val.getValue());
+	MlValue operator / (IValue * val) {
+			return MlValue(this->value / val->getValue());
 	}
 
-	MlValue OR(MlValue val){
-		return MlValue(this->value || val.getValue());
+	MlValue AND(IValue * val){
+		return MlValue(this->value && val->getValue());
+	}
+
+	MlValue OR(IValue * val){
+		return MlValue(this->value || val->getValue());
 	}
 
 	MlValue NOT(){
 		return MlValue(!this->value);
 	}
-	MlValue INF(MlValue val){
-		return MlValue(this->value < val.getValue());
+	MlValue INF(IValue * val){
+		return MlValue(this->value < val->getValue());
 	}
-	MlValue INFOUEGAL(MlValue val){
-		return MlValue(this->value <= val.getValue());
+	MlValue INFOUEGAL(IValue * val){
+		return MlValue(this->value <= val->getValue());
 	}
-	MlValue SUPP(MlValue val){
-		return MlValue(this->value > val.getValue());
+	MlValue SUPP(IValue * val){
+		return MlValue(this->value > val->getValue());
 	}
-	MlValue SUPPOUEGAL(MlValue val){
-		return MlValue(this->value >= val.getValue());
+	MlValue SUPPOUEGAL(IValue * val){
+		return MlValue(this->value >= val->getValue());
 	}
-	MlValue EGAL(MlValue val){
-		return MlValue(this->value == val.getValue());
+	MlValue EGAL(IValue * val){
+		return MlValue(this->value == val->getValue());
 	}
-	MlValue DIFF(MlValue val){
-		return MlValue(this->value != val.getValue());
+	MlValue DIFF(IValue * val){
+		return MlValue(this->value != val->getValue());
 	}
 
 	~MlValue(){}

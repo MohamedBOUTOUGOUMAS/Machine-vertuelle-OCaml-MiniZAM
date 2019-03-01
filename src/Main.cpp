@@ -11,7 +11,8 @@
 #include <regex>
 #include <vector>
 #include "Instruction.h"
-
+#include "Programme.h"
+#include "Interpreter.h"
 using namespace std;
 using namespace minizam;
 
@@ -20,7 +21,7 @@ using namespace minizam;
 
 int main() {
 
-	ifstream fichier("tests/n-ary_funs/grab2.txt", ios::in);  // on ouvre en lecture
+	ifstream fichier("tests/n-ary_funs/grab1.txt", ios::in);  // on ouvre en lecture
 	if(fichier)  // si l'ouverture a fonctionné
 	{
 		vector<Instruction> instructions = vector<Instruction>();
@@ -36,6 +37,13 @@ int main() {
 			Instruction ins = Instruction(l, instr);
 			instructions.push_back(ins);
 		}
+
+		Programme prog = Programme(instructions);
+
+		Interpreter inter = Interpreter(prog);
+
+		inter.evaluer();
+
 		fichier.close();
 	}
 	else

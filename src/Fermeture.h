@@ -7,14 +7,20 @@
 
 #ifndef SRC_FERMETURE_H_
 #define SRC_FERMETURE_H_
-#include <iostream>>
+
 #include "Environnement.h"
+#include "Ivalue.h"
 
 namespace minizam{
 
-class Fermeture{
+class Fermeture : public IValue{
 	int pointeurCode;
 	Environnement env;
+public:
+	Fermeture(int p, Environnement e):pointeurCode(p),env(e){}
+	int getPointer(){return pointeurCode;}
+	int getValue(){}
+	Environnement getEnv(){return env;}
 };
 
 }
