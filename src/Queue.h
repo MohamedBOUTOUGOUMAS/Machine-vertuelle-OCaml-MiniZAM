@@ -48,7 +48,9 @@ template<typename T>
 			if(i >= tab.size()){
 				cout<< "out of bound" <<endl;
 			}
-			return tab.at(i);
+			T res = tab.at(i);
+			tab.erase(tab.begin()+i);
+			return res;
 		}
 
 

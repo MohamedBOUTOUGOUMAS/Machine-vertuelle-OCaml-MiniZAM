@@ -58,10 +58,11 @@ namespace minizam{
 			os << label<< " "<< inst<< endl;
 			return os;
 		}
-		~Instruction(){
-			label.~basic_string();
-			inst.~basic_string();
-		}
+//		~Instruction(){
+//			label.~string();
+//			inst.~string();
+//			attributes.~vector();
+//		}
 
 	};
 

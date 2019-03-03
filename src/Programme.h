@@ -42,6 +42,10 @@ public:
 //		return os;
 //	}
 
+//	~Programme(){
+//		prog.~vector();
+//	}
+
 };
 
 

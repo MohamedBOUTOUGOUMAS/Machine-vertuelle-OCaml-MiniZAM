@@ -28,7 +28,7 @@ class Interpreter{
 	int pc = 0;
 	Queue<IValue * > pile = Queue<IValue *>();
 	IValue * env = new Environnement();
-	IValue * accu = new MlValue(0);
+	IValue * accu;
 
 public :
 
@@ -43,92 +43,99 @@ public :
 	}
 
 
-	void evaluer(){
+	IValue * evaluer(){
 
-		for(auto inst : prog.getProg()){
-
+		//for(auto inst : prog.getProg()){
+		for(int i=0; i<prog.getProg().size(); i++){
+			cout<<"i : "<<i<<endl;
+			Instruction inst = prog.getProg().at(i);
+			if(i != pc){
+				inst = prog.getProg().at(pc);
+				i = pc;
+			}
 			string c = "CONST";
 			if( inst.getInst().find(c) != -1){
-				MlValue accu = static_cast<MlValue>(accu);
+				accu = new MlValue(0.0);
 				cout<<stoi(inst.getAttributes().at(0))<<endl;
-				accu.setValue(stoi(inst.getAttributes().at(0)));
+				accu->setValue(stoi(inst.getAttributes().at(0)));
+				cout<<accu->getValue()<<endl;
 				pc += 1;
 				continue;
 			}
 
 			string op = "PRIM";
 			if(inst.getInst().find(op) != -1){
-				MlValue accu = static_cast<MlValue>(accu);
+
 				string op = inst.getAttributes().at(0);
 				cout<<op<<" : op"<<endl;
-
+				cout<<accu->getValue()<<" : value de accu operator"<<endl;
 				if(op == "+"){
 
-					accu.setValue(accu.getValue() + (pile.pop())->getValue());
+					accu->setValue(accu->getValue() + (pile.pop())->getValue());
 					pc += 1;
 					continue;
 				}
 				if(op == "-"){
-					accu.setValue(accu.getValue() - pile.pop()->getValue());
-					cout<<accu.getValue()<<" : accu"<<endl;
+					accu->setValue(accu->getValue() - pile.pop()->getValue());
+					cout<<accu->getValue()<<" : accu"<<endl;
 					pc += 1;
 					continue;
 				}
 				if(op == "*"){
 
-					accu.setValue(accu.getValue() * pile.pop()->getValue());
+					accu->setValue(accu->getValue() * pile.pop()->getValue());
 					pc += 1;
 					continue;
 				}
 				if(op == "/"){
 
-					accu.setValue(accu.getValue() / pile.pop()->getValue());
+					accu->setValue(accu->getValue() / pile.pop()->getValue());
 					pc += 1;
 					continue;
 				}
 				if(op == "and"){
 
-					accu = accu.AND(pile.pop());
+					accu = accu->AND(pile.pop());
 					pc += 1;
 					continue;
 				}
 				if(op == "or"){
-					accu = accu.OR(pile.pop());
+					accu = accu->OR(pile.pop());
 					pc += 1;
 					continue;
 				}
 				if(op == "not"){
-					accu = accu.NOT();
+					accu = accu->NOT();
 					pc += 1;
 					continue;
 				}
 				if(op == "<"){
-					accu = accu.INF(pile.pop());
+					accu = accu->INF(pile.pop());
 					pc += 1;
 					continue;
 				}
 				if(op == "<="){
-					accu = accu.INFOUEGAL(pile.pop());
+					accu = accu->INFOUEGAL(pile.pop());
 					pc += 1;
 					continue;
 				}
 				if(op == ">"){
-					accu = accu.SUPP(pile.pop());
+					accu = accu->SUPP(pile.pop());
 					pc += 1;
 					continue;
 				}
 				if(op == ">="){
-					accu = accu.SUPPOUEGAL(pile.pop());
+					accu = accu->SUPPOUEGAL(pile.pop());
 					pc += 1;
 					continue;
 				}
 				if(op == "="){
-					accu = accu.EGAL(pile.pop());
+					accu = accu->EGAL(pile.pop());
 					pc += 1;
 					continue;
 				}
 				if(op == "<>"){
-					accu = accu.DIFF(pile.pop());
+					accu = accu->DIFF(pile.pop());
 					pc += 1;
 					continue;
 				}
@@ -139,15 +146,15 @@ public :
 			string branch = "BRANCH";
 			if(inst.getInst().find(branch) != -1){
 				cout<<prog.position(inst.getAttributes().at(0)+":")<<endl;
-				pc = prog.position(inst.getAttributes().at(0));
+				pc = prog.position(inst.getAttributes().at(0)+":");
+				cout<<"pc : "<<pc<<endl;
 				continue;
 			}
 
 
 			string bnot = "BRANCHIFNOT";
 			if(inst.getInst().find(bnot) != -1){
-				MlValue accu = static_cast<MlValue>(accu);
-				if(accu.getValue() == 0){
+				if(accu->getValue() == 0){
 					pc = prog.position(inst.getAttributes().at(0));
 				}else{
 					pc += 1;
@@ -158,6 +165,7 @@ public :
 
 			string push = "PUSH";
 			if(inst.getInst().find(push) != -1){
+				cout<<"value : "<<accu->getPointer()<<endl;
 				pile.push(accu);
 				pc += 1;
 				continue;
@@ -167,7 +175,9 @@ public :
 
 			string pop = "POP";
 			if(inst.getInst().find(pop) != -1){
-				pile.pop();
+				if(pile.size()>0){
+					pile.pop();
+				}
 				pc += 1;
 				continue;
 			}
@@ -175,8 +185,10 @@ public :
 
 			string acc = "ACC";
 			if(inst.getInst().find(acc) != -1){
-				cout<<stoi(inst.getAttributes().at(0))<<endl;
-				accu = pile.getElementByIndex(stoi(inst.getAttributes().at(0)) - 1);
+				cout<<"value : befor : "<<accu->getValue()<<endl;
+				cout<<"index dans la pile : "<<stoi(inst.getAttributes().at(0))<<endl;
+				accu = pile.getElementByIndex(stoi(inst.getAttributes().at(0)) -1);
+				cout<<"value : after : "<<accu->getValue()<<endl;
 				pc += 1;
 				continue;
 			}
@@ -184,55 +196,58 @@ public :
 
 			string envacc = "ENVACC";
 			if(inst.getInst().find(envacc) != -1){
-				Environnement env = static_cast<Environnement>(env);
-				accu = env.getEnv().at(stoi(inst.getAttributes().at(0)));
+				cout<<"value : befor : "<<accu->getPointer()<<endl;
+				accu = env->getEnvironnement().at(stoi(inst.getAttributes().at(0)));
 				pc += 1;
+				cout<<"value : after : "<<accu->getPointer()<<endl;
 				continue;
 			}
 
 			string closure = "CLOSURE";
 			if(inst.getInst().find(closure) != -1){
-				Environnement env = static_cast<Environnement>(env);
 
 				int n = stoi(inst.getAttributes().at(1));
 
 				if(n>0) {pile.push(accu);}
-
-				int l = prog.position(inst.getAttributes().at(0));
-
+				cout<<"n : "<<n<<endl;
+				int l = prog.position(inst.getAttributes().at(0)+":");
+				cout<<"label : "<<l<<endl;
 				for(int i=0 ; i<n; i++){
-					env.extends(pile.pop());
+					env->extends(pile.pop());
 				}
-				Fermeture f = Fermeture(l,env);
-				accu = &f;
+				accu = new Fermeture(l,env);
+				cout<<"env size : "<<accu->getEnvironnement().size()<<endl;
 				pc += 1;
+				cout<<"value : after : "<<accu->getPointer()<<endl;
 				continue;
 			}
 
 
 			string apply = "APPLY";
 			if(inst.getInst().find(apply) != -1){
-
+				cout<<"value : befor : "<<accu->getPointer()<<endl;
 				vector<IValue *> tmp = vector<IValue *>();
 
 				int n = stoi(inst.getAttributes().at(0));
-
+				cout<<"n : "<<n<<endl;
 				for(int i=0 ; i<n; i++){
 					tmp.push_back(pile.pop());
 				}
 
 				pile.push(env);
-				MlValue v = MlValue(pc+1);
-				pile.push(&v);
+				MlValue * v = new MlValue(pc+1);
+				pile.push(v);
 
-				for(int i=n-1 ; i>0; i--){
-					pile.push(tmp.at(i));
+				for(int i=0; i<n ;i++){
+					pile.push(tmp.at(n-i-1));
 				}
+				//Fermeture f = *accu;
+				pc = accu->getPointer();
+				cout<<accu->getPointer()<<endl;
 
-				Fermeture accu = static_cast<Fermeture>(accu);
-
-				pc = accu.getPointer();
-				*env = accu.getEnv();
+				cout<<"pc : "<<pc<<endl;
+				cout<<"env size : "<<accu->getEnvironnement().size()<<endl;
+				env = new Environnement(accu->getEnvironnement());
 				continue;
 			}
 
@@ -243,10 +258,12 @@ public :
 
 				int n = stoi(inst.getAttributes().at(0));
 
-				for(int i=0 ; i<n; i++){
+				for(int i=0 ; i<n-1; i++){
 					pile.pop();
 				}
-				pc = pile.pop()->getValue();
+
+				IValue * ret = pile.pop();
+				pc = ret->getValue();
 
 				env = pile.pop();
 				continue;
@@ -254,15 +271,26 @@ public :
 
 			string stop = "STOP";
 			if(inst.getInst().find( stop) != -1){
-				prog.~Programme();
-				pile.~Queue();
-				env->~IValue();
-				accu->~IValue();
-				pc += 1;
-				continue;
+//				prog.~Programme();
+//				pile.~Queue();
+//				env->~IValue();
+//				accu->~IValue();
 			}
+
+
 		}
+		return accu;
 	}
+
+
+	~Interpreter(){
+		accu->~IValue();
+		env->~IValue();
+		pile.~Queue();
+		prog.~Programme();
+
+	}
+
 };
 
 }//end namespace

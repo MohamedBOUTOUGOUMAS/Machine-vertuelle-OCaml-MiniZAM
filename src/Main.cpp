@@ -42,8 +42,11 @@ int main() {
 
 		Interpreter inter = Interpreter(prog);
 
-		inter.evaluer();
+		IValue * accumulateur = inter.evaluer();
 
+		cout<<"Le resultat de l'evaluation est : "<<accumulateur->getValue()<<endl;
+
+		inter.~Interpreter();
 		fichier.close();
 	}
 	else

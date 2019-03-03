@@ -15,12 +15,60 @@ namespace minizam{
 
 class Fermeture : public IValue{
 	int pointeurCode;
-	Environnement env;
+	IValue * env;
 public:
-	Fermeture(int p, Environnement e):pointeurCode(p),env(e){}
-	int getPointer(){return pointeurCode;}
-	int getValue(){}
-	Environnement getEnv(){return env;}
+	Fermeture(int p, IValue * e):pointeurCode(p),env(e){}
+
+	Fermeture(Fermeture * f){
+		pointeurCode = f->getPointer();
+		env = new Environnement(f->getEnvironnement());
+	}
+	int getPointer(){
+		return pointeurCode;
+	}
+	void setPointer(int p){
+		pointeurCode = p;
+	}
+	void setEnv(IValue * e){
+
+	}
+	vector<IValue *> getEnvironnement(){return env->getEnvironnement();}
+
+	double getValue(){
+		cout<<"From Fermeture Class : "<<endl;
+		return -1;
+	}
+
+	void setValue(double v){}
+
+	void extends(IValue * e){}
+
+	IValue* AND(IValue * val){
+	}
+
+	IValue* OR(IValue * val){
+	}
+
+	IValue* NOT(){
+	}
+	IValue* INF(IValue * val){
+	}
+	IValue* INFOUEGAL(IValue * val){
+	}
+	IValue* SUPP(IValue * val){
+	}
+	IValue* SUPPOUEGAL(IValue * val){
+	}
+	IValue* EGAL(IValue * val){
+	}
+	IValue* DIFF(IValue * val){
+	}
+
+
+//	~Fermeture(){
+//		env->~IValue();
+//	}
+
 };
 
 }

@@ -14,51 +14,64 @@ namespace minizam{
 class MlValue : public IValue{
 	double value = 0;
 public:
+
 	MlValue(double v):value(v){}
-	int getValue(){return value;}
-	void setValue(int v){value = v;}
-	MlValue operator + (IValue * val) {
+	MlValue(MlValue * v){
+		value = v->getValue();
+	}
+	double getValue(){return value;}
+	void setValue(double v){value = v;}
+
+	int getPointer(){return -1;}
+	void setPointer(int p){}
+	vector<IValue *> getEnvironnement(){return vector<IValue *>();}
+	void setEnv(IValue * e){}
+
+
+	MlValue operator + (MlValue * val) {
 		return MlValue(this->value + val->getValue());
 	}
-	MlValue operator - (IValue * val) {
+	MlValue operator - (MlValue * val) {
 			return MlValue(this->value - val->getValue());
 	}
-	MlValue operator * (IValue * val) {
+	MlValue operator * (MlValue * val) {
 			return MlValue(this->value * val->getValue());
 	}
-	MlValue operator / (IValue * val) {
+	MlValue operator / (MlValue * val) {
 			return MlValue(this->value / val->getValue());
 	}
 
-	MlValue AND(IValue * val){
-		return MlValue(this->value && val->getValue());
+	IValue * AND(IValue * val){
+		return new MlValue(this->value && val->getValue());
 	}
 
-	MlValue OR(IValue * val){
-		return MlValue(this->value || val->getValue());
+	IValue * OR(IValue * val){
+		return new MlValue(this->value || val->getValue());
 	}
 
-	MlValue NOT(){
-		return MlValue(!this->value);
+	IValue * NOT(){
+		return new MlValue(!this->value);
 	}
-	MlValue INF(IValue * val){
-		return MlValue(this->value < val->getValue());
+	IValue * INF(IValue * val){
+		return new MlValue(this->value < val->getValue());
 	}
-	MlValue INFOUEGAL(IValue * val){
-		return MlValue(this->value <= val->getValue());
+	IValue * INFOUEGAL(IValue * val){
+		return new MlValue(this->value <= val->getValue());
 	}
-	MlValue SUPP(IValue * val){
-		return MlValue(this->value > val->getValue());
+	IValue * SUPP(IValue * val){
+		return new MlValue(this->value > val->getValue());
 	}
-	MlValue SUPPOUEGAL(IValue * val){
-		return MlValue(this->value >= val->getValue());
+	IValue * SUPPOUEGAL(IValue * val){
+		return new MlValue(this->value >= val->getValue());
 	}
-	MlValue EGAL(IValue * val){
-		return MlValue(this->value == val->getValue());
+	IValue * EGAL(IValue * val){
+		return new MlValue(this->value == val->getValue());
 	}
-	MlValue DIFF(IValue * val){
-		return MlValue(this->value != val->getValue());
+	IValue * DIFF(IValue * val){
+		return new MlValue(this->value != val->getValue());
 	}
+
+	void extends(IValue * e){}
 
 	~MlValue(){}
 };
