@@ -71,25 +71,25 @@ public :
 				cout<<accu->getValue()<<" : value de accu operator"<<endl;
 				if(op == "+"){
 
-					accu->setValue(accu->getValue() + (pile.pop())->getValue());
+					accu = new MlValue(accu->getValue() + (pile.pop())->getValue());
 					pc += 1;
 					continue;
 				}
 				if(op == "-"){
-					accu->setValue(accu->getValue() - pile.pop()->getValue());
+					accu = new MlValue(accu->getValue() - pile.pop()->getValue());
 					cout<<accu->getValue()<<" : accu"<<endl;
 					pc += 1;
 					continue;
 				}
 				if(op == "*"){
 
-					accu->setValue(accu->getValue() * pile.pop()->getValue());
+					accu = new MlValue(accu->getValue() * pile.pop()->getValue());
 					pc += 1;
 					continue;
 				}
 				if(op == "/"){
 
-					accu->setValue(accu->getValue() / pile.pop()->getValue());
+					accu = new MlValue(accu->getValue() / pile.pop()->getValue());
 					pc += 1;
 					continue;
 				}
@@ -160,7 +160,7 @@ public :
 			string bnot = "BRANCHIFNOT";
 			if(inst.getInst().find(bnot) != -1){
 				if(accu->getValue() == 0){
-					pc = prog.position(inst.getAttributes().at(0));
+					pc = prog.position(inst.getAttributes().at(0)+":");
 				}else{
 					pc += 1;
 				}
@@ -208,7 +208,7 @@ public :
 				continue;
 			}
 
-			string closure = "CLOSURE";
+			string closure = "CLOSURE ";
 			if(inst.getInst().find(closure) != -1){
 
 				int n = stoi(inst.getAttributes().at(1));
@@ -228,7 +228,46 @@ public :
 			}
 
 
-			string apply = "APPLY";
+			string closureRec = "CLOSUREREC";
+			if(inst.getInst().find( closureRec) != -1){
+
+				int n = stoi(inst.getAttributes().at(1));
+
+				if(n>0) {
+					pile.push(accu);
+				}
+				cout<<"n : "<<n<<endl;
+
+				int l = prog.position(inst.getAttributes().at(0)+":");
+
+				cout<<"label : "<<l<<endl;
+
+				env->extends(new MlValue(l));
+
+				for(int i=0 ; i<n; i++){
+					env->extends(pile.pop());
+				}
+
+				accu = new Fermeture(l,env);
+				cout<<"env size : "<<accu->getEnvironnement().size()<<endl;
+				pc += 1;
+				cout<<"value : after : "<<accu->getPointer()<<endl;
+
+				pile.push(accu);
+				continue;
+			}
+
+
+			string offsetClosure = "OFFSETCLOSURE";
+			if(inst.getInst().find(offsetClosure) != -1){
+				IValue * v = env->getEnvironnement().at(0);
+				Fermeture * f = new Fermeture(v->getValue(), env);
+				accu = f;
+				pc += 1;
+				continue;
+			}
+
+			string apply = "APPLY ";
 			if(inst.getInst().find(apply) != -1){
 				cout<<"value : befor : "<<accu->getPointer()<<endl;
 				vector<IValue *> tmp = vector<IValue *>();
@@ -275,12 +314,10 @@ public :
 			}
 
 			string stop = "STOP";
-			if(inst.getInst().find( stop) != -1){
-//				prog.~Programme();
-//				pile.~Queue();
-//				env->~IValue();
-//				accu->~IValue();
-			}
+			if(inst.getInst().find( stop) != -1){}
+
+
+
 
 
 		}

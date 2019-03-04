@@ -48,9 +48,9 @@ template<typename T>
 			if(i >= tab.size()){
 				cout<< "out of bound" <<endl;
 			}
-			i = tab.size() - i- 1;
+			i = tab.size() - i - 1;
+			cout<< "getElementByIndex index : "<<i <<endl;
 			T res = tab.at(i);
-			//tab.erase(tab.begin()+i);
 			return res;
 		}
 
