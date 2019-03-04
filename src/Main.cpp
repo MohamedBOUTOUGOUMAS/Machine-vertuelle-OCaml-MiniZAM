@@ -21,7 +21,7 @@ using namespace minizam;
 
 int main() {
 
-	ifstream fichier("tests/n-ary_funs/grab1.txt", ios::in);  // on ouvre en lecture
+	ifstream fichier("tests/unary_funs/fun3.txt", ios::in);  // on ouvre en lecture
 	if(fichier)  // si l'ouverture a fonctionné
 	{
 		vector<Instruction> instructions = vector<Instruction>();

@@ -139,11 +139,16 @@ public :
 					pc += 1;
 					continue;
 				}
+				if(op == "print"){
+					cout<<"Contenu de l'accu :  "<<accu->getValue()<<endl;
+					pc += 1;
+					continue;
+				}
 
 			}
 
 
-			string branch = "BRANCH";
+			string branch = "BRANCH ";
 			if(inst.getInst().find(branch) != -1){
 				cout<<prog.position(inst.getAttributes().at(0)+":")<<endl;
 				pc = prog.position(inst.getAttributes().at(0)+":");
@@ -187,7 +192,7 @@ public :
 			if(inst.getInst().find(acc) != -1){
 				cout<<"value : befor : "<<accu->getValue()<<endl;
 				cout<<"index dans la pile : "<<stoi(inst.getAttributes().at(0))<<endl;
-				accu = pile.getElementByIndex(stoi(inst.getAttributes().at(0)) -1);
+				accu = pile.getElementByIndex(stoi(inst.getAttributes().at(0)));
 				cout<<"value : after : "<<accu->getValue()<<endl;
 				pc += 1;
 				continue;
@@ -258,7 +263,7 @@ public :
 
 				int n = stoi(inst.getAttributes().at(0));
 
-				for(int i=0 ; i<n-1; i++){
+				for(int i=0 ; i<n; i++){
 					pile.pop();
 				}
 
