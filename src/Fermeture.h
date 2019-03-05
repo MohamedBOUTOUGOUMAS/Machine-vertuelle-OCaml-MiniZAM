@@ -65,9 +65,9 @@ public:
 	}
 
 
-//	~Fermeture(){
-//		env->~IValue();
-//	}
+	~Fermeture(){
+		env->~IValue();
+	}
 
 };
 

@@ -209,7 +209,7 @@ public :
 			}
 
 			string closure = "CLOSURE ";
-			if(inst.getInst().find(closure) != -1){
+			if(inst.getInst().find(closure) == 0){
 
 				int n = stoi(inst.getAttributes().at(1));
 
@@ -261,8 +261,7 @@ public :
 			string offsetClosure = "OFFSETCLOSURE";
 			if(inst.getInst().find(offsetClosure) != -1){
 				IValue * v = env->getEnvironnement().at(0);
-				Fermeture * f = new Fermeture(v->getValue(), env);
-				accu = f;
+				accu = new Fermeture(v->getValue(), env);
 				pc += 1;
 				continue;
 			}
@@ -279,6 +278,8 @@ public :
 				}
 
 				pile.push(env);
+				IValue * e = pile.pop();
+				pile.push(e);
 				MlValue * v = new MlValue(pc+1);
 				pile.push(v);
 
@@ -325,13 +326,13 @@ public :
 	}
 
 
-	~Interpreter(){
-		accu->~IValue();
-		env->~IValue();
-		pile.~Queue();
-		prog.~Programme();
-
-	}
+//	~Interpreter(){
+//		accu->~IValue();
+//		env->~IValue();
+//		pile.~Queue();
+//		prog.~Programme();
+//
+//	}
 
 };
 

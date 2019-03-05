@@ -73,7 +73,7 @@ public:
 
 	void extends(IValue * e){}
 
-	~MlValue(){}
+	//~MlValue(){}
 };
 
 

@@ -56,7 +56,7 @@ template<typename T>
 
 
 		~Queue() {
-			tab.~vector();
+			tab.clear();
 		}
 
 	};

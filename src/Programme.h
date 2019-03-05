@@ -35,12 +35,6 @@ public:
 		}
 		return -1;
 	}
-//	ostream & operator << (std::ostream & os) {
-//		for(Instruction i:prog){
-//			os<<i<<" ";
-//		}
-//		return os;
-//	}
 
 //	~Programme(){
 //		prog.~vector();

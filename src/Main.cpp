@@ -21,10 +21,10 @@ using namespace minizam;
 
 int main() {
 
-	//ifstream fichier("tests/unary_funs/fun3.txt", ios::in);
-	//ifstream fichier("tests/rec_funs/fibo.txt", ios::in);
+	//ifstream fichier("tests/n-ary_funs/mytest.txt", ios::in);
+	ifstream fichier("tests/rec_funs/fibo.txt", ios::in);
 
-	ifstream fichier("tests/rec_funs/facto.txt", ios::in);
+	//ifstream fichier("tests/rec_funs/facto.txt", ios::in);
 
 	if(fichier)
 	{
@@ -50,7 +50,7 @@ int main() {
 
 		cout<<"Le resultat de l'evaluation est : "<<accumulateur->getValue()<<endl;
 
-		inter.~Interpreter();
+		//inter.~Interpreter();
 		fichier.close();
 	}
 	else
