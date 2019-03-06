@@ -29,7 +29,7 @@ class Interpreter{
 	Queue<IValue * > pile = Queue<IValue *>();
 	IValue * env = new Environnement();
 	IValue * accu;
-
+	IValue * extra_args;
 public :
 
 	Interpreter(Programme p):prog(p){}
@@ -54,7 +54,7 @@ public :
 				i = pc;
 			}
 			string c = "CONST";
-			if( inst.getInst().find(c) != -1){
+			if( inst.getInst().find(c) == 0){
 				accu = new MlValue(0.0);
 				cout<<stoi(inst.getAttributes().at(0))<<endl;
 				accu->setValue(stoi(inst.getAttributes().at(0)));
@@ -64,7 +64,7 @@ public :
 			}
 
 			string op = "PRIM";
-			if(inst.getInst().find(op) != -1){
+			if(inst.getInst().find(op) == 0){
 
 				string op = inst.getAttributes().at(0);
 				cout<<op<<" : op"<<endl;
@@ -149,7 +149,7 @@ public :
 
 
 			string branch = "BRANCH ";
-			if(inst.getInst().find(branch) != -1){
+			if(inst.getInst().find(branch) == 0){
 				cout<<prog.position(inst.getAttributes().at(0)+":")<<endl;
 				pc = prog.position(inst.getAttributes().at(0)+":");
 				cout<<"pc : "<<pc<<endl;
@@ -158,7 +158,7 @@ public :
 
 
 			string bnot = "BRANCHIFNOT";
-			if(inst.getInst().find(bnot) != -1){
+			if(inst.getInst().find(bnot) == 0){
 				if(accu->getValue() == 0){
 					pc = prog.position(inst.getAttributes().at(0)+":");
 				}else{
@@ -169,7 +169,7 @@ public :
 
 
 			string push = "PUSH";
-			if(inst.getInst().find(push) != -1){
+			if(inst.getInst().find(push) == 0){
 				cout<<"value : "<<accu->getPointer()<<endl;
 				pile.push(accu);
 				pc += 1;
@@ -179,7 +179,7 @@ public :
 
 
 			string pop = "POP";
-			if(inst.getInst().find(pop) != -1){
+			if(inst.getInst().find(pop) == 0){
 				if(pile.size()>0){
 					pile.pop();
 				}
@@ -189,7 +189,7 @@ public :
 
 
 			string acc = "ACC";
-			if(inst.getInst().find(acc) != -1){
+			if(inst.getInst().find(acc) == 0){
 				cout<<"value : befor : "<<accu->getValue()<<endl;
 				cout<<"index dans la pile : "<<stoi(inst.getAttributes().at(0))<<endl;
 				accu = pile.getElementByIndex(stoi(inst.getAttributes().at(0)));
@@ -200,7 +200,7 @@ public :
 
 
 			string envacc = "ENVACC";
-			if(inst.getInst().find(envacc) != -1){
+			if(inst.getInst().find(envacc) == 0){
 				cout<<"value : befor : "<<accu->getPointer()<<endl;
 				accu = env->getEnvironnement().at(stoi(inst.getAttributes().at(0)));
 				pc += 1;
@@ -213,14 +213,17 @@ public :
 
 				int n = stoi(inst.getAttributes().at(1));
 
-				if(n>0) {pile.push(accu);}
+				if(n>0) {
+					pile.push(accu);
+				}
 				cout<<"n : "<<n<<endl;
 				int l = prog.position(inst.getAttributes().at(0)+":");
 				cout<<"label : "<<l<<endl;
 				for(int i=0 ; i<n; i++){
 					env->extends(pile.pop());
 				}
-				accu = new Fermeture(l,env);
+				Environnement * e = new Environnement(env->getEnvironnement());
+				accu = new Fermeture(l,e);
 				cout<<"env size : "<<accu->getEnvironnement().size()<<endl;
 				pc += 1;
 				cout<<"value : after : "<<accu->getPointer()<<endl;
@@ -229,7 +232,7 @@ public :
 
 
 			string closureRec = "CLOSUREREC";
-			if(inst.getInst().find( closureRec) != -1){
+			if(inst.getInst().find( closureRec) == 0){
 
 				int n = stoi(inst.getAttributes().at(1));
 
@@ -259,7 +262,7 @@ public :
 
 
 			string offsetClosure = "OFFSETCLOSURE";
-			if(inst.getInst().find(offsetClosure) != -1){
+			if(inst.getInst().find(offsetClosure) == 0){
 				IValue * v = env->getEnvironnement().at(0);
 				accu = new Fermeture(v->getValue(), env);
 				pc += 1;
@@ -267,26 +270,32 @@ public :
 			}
 
 			string apply = "APPLY ";
-			if(inst.getInst().find(apply) != -1){
+			if(inst.getInst().find(apply) == 0){
+
 				cout<<"value : befor : "<<accu->getPointer()<<endl;
 				vector<IValue *> tmp = vector<IValue *>();
 
 				int n = stoi(inst.getAttributes().at(0));
 				cout<<"n : "<<n<<endl;
+
+
 				for(int i=0 ; i<n; i++){
 					tmp.push_back(pile.pop());
 				}
 
-				pile.push(env);
-				IValue * e = pile.pop();
-				pile.push(e);
+
+				pile.push(new Environnement(env->getEnvironnement()));
 				MlValue * v = new MlValue(pc+1);
 				pile.push(v);
+
+
+				pile.push(extra_args);
+				extra_args = new MlValue(n - 1);
 
 				for(int i=0; i<n ;i++){
 					pile.push(tmp.at(n-i-1));
 				}
-				//Fermeture f = *accu;
+
 				pc = accu->getPointer();
 				cout<<accu->getPointer()<<endl;
 
@@ -297,9 +306,55 @@ public :
 			}
 
 
+			string grab = "GRAB";
+			if(inst.getInst().find( grab) == 0){
+				int n = stoi(inst.getAttributes().at(0));
+				cout<<"n : "<<n<<endl;
+				if(extra_args->getValue() >= n){
+					extra_args = new MlValue(extra_args->getValue() - n);
+					pc += 1;
+				}else{
+					vector<IValue *> tmp = vector<IValue *>();
+					for(int i=0 ; i<extra_args->getValue() + 1; i++){
+						tmp.push_back(pile.pop());
+					}
+					int c = pc - 1;
+
+					Environnement * e = new Environnement();
+					e->extends(new Environnement(env->getEnvironnement()));
+
+					for(int i=0; i < tmp.size() ;i++){
+						e->extends(tmp.at(tmp.size()-i-1));
+					}
+
+					accu = new Fermeture(c, e);
+
+					extra_args = pile.pop();
+					IValue * ret = pile.pop();
+					pc = ret->getValue();
+					env = pile.pop();
+				}
+
+				continue;
+			}
+
+			string restart = "RESTART";
+			if(inst.getInst().find(restart) == 0){
+				int n = env->getEnvironnement().size();
+				for(int i = 1 ; i<n; i++){
+					pile.push(env->getEnvironnement().at(n-i));
+				}
+
+
+				env = env->getEnvironnement().at(0);
+
+				extra_args = new MlValue(extra_args->getValue() + n-1);
+				pc += 1;
+				continue;
+			}
 
 			string retur = "RETURN";
-			if(inst.getInst().find( retur) != -1){
+			if(inst.getInst().find( retur) == 0){
 
 				int n = stoi(inst.getAttributes().at(0));
 
@@ -307,15 +362,26 @@ public :
 					pile.pop();
 				}
 
-				IValue * ret = pile.pop();
-				pc = ret->getValue();
+				if(extra_args->getValue() == 0){
 
-				env = pile.pop();
+					extra_args = pile.pop();
+					IValue * ret = pile.pop();
+					pc = ret->getValue();
+
+					env = pile.pop();
+
+				}else{
+					extra_args = new MlValue(extra_args->getValue() - 1);
+					pc = accu->getPointer();
+					env = new Environnement(accu->getEnvironnement());
+				}
+
+
 				continue;
 			}
 
 			string stop = "STOP";
-			if(inst.getInst().find( stop) != -1){}
+			if(inst.getInst().find( stop) == 0){}
 
 
 
