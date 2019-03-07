@@ -30,6 +30,7 @@ class Interpreter{
 	IValue * env = new Environnement();
 	IValue * accu;
 	IValue * extra_args;
+	IValue * trap_sp = new MlValue(-1);
 public :
 
 	Interpreter(Programme p):prog(p){}
@@ -167,9 +168,63 @@ public :
 				continue;
 			}
 
+			regex pushtrap{"PUSHTRAP"};
+			if(regex_search(inst.getInst(), pushtrap)){
 
-			string push = "PUSH";
-			if(inst.getInst().find(push) == 0){
+				int l = prog.position(inst.getAttributes().at(0)+":");
+				cout<<"label : "<<l<<endl;
+
+
+				pile.push(extra_args);
+				pile.push(env);
+				pile.push(trap_sp);
+				pile.push(new MlValue(l));
+
+				trap_sp = pile.getElementByIndex(0);
+
+				pc += 1;
+				continue;
+			}
+
+			regex poptrap {"POPTRAP"};
+			if(regex_search(inst.getInst(), poptrap)){
+				pile.pop();
+				IValue * ret = pile.pop();
+				trap_sp = ret;
+				pile.pop();
+				pile.pop();
+
+				pc += 1;
+				continue;
+			}
+
+
+			string raise = "RAISE";
+			if(inst.getInst().find(raise) == 0){
+				if(trap_sp->getValue() == -1){
+					cout<<"error : "<<accu->getValue()<<endl;
+					break;
+				}else{
+					for(int i = 0; i<pile.size(); i++){
+						IValue * ret = pile.pop();
+						if(trap_sp->getValue() == ret->getValue()){
+							break;
+						}
+					}
+
+					if(pile.size() > 0){
+						pc = trap_sp->getValue();
+						trap_sp = pile.pop();
+						env = pile.pop();
+						extra_args = pile.pop();
+					}
+
+				}
+				continue;
+			}
+
+			regex push{"PUSH"};
+			if(regex_search(inst.getInst(), push)){
 				cout<<"value : "<<accu->getPointer()<<endl;
 				pile.push(accu);
 				pc += 1;
@@ -178,8 +233,8 @@ public :
 
 
 
-			string pop = "POP";
-			if(inst.getInst().find(pop) == 0){
+			regex pop{"POP"};
+			if(regex_search(inst.getInst(), pop)){
 				if(pile.size()>0){
 					pile.pop();
 				}
@@ -189,7 +244,7 @@ public :
 
 
 			string acc = "ACC";
-			if(inst.getInst().find(acc) == 0){
+			if(inst.getInst().find(acc, 0) == 0){
 				cout<<"value : befor : "<<accu->getValue()<<endl;
 				cout<<"index dans la pile : "<<stoi(inst.getAttributes().at(0))<<endl;
 				accu = pile.getElementByIndex(stoi(inst.getAttributes().at(0)));
@@ -202,7 +257,8 @@ public :
 			string envacc = "ENVACC";
 			if(inst.getInst().find(envacc) == 0){
 				cout<<"value : befor : "<<accu->getPointer()<<endl;
-				accu = env->getEnvironnement().at(stoi(inst.getAttributes().at(0)));
+				int index = stoi(inst.getAttributes().at(0));
+				accu = env->getEnvironnement().at(index);
 				pc += 1;
 				cout<<"value : after : "<<accu->getPointer()<<endl;
 				continue;
@@ -219,10 +275,12 @@ public :
 				cout<<"n : "<<n<<endl;
 				int l = prog.position(inst.getAttributes().at(0)+":");
 				cout<<"label : "<<l<<endl;
+
+				Environnement * e = new Environnement();
 				for(int i=0 ; i<n; i++){
-					env->extends(pile.pop());
+					e->extends(pile.pop());
 				}
-				Environnement * e = new Environnement(env->getEnvironnement());
+
 				accu = new Fermeture(l,e);
 				cout<<"env size : "<<accu->getEnvironnement().size()<<endl;
 				pc += 1;
@@ -379,6 +437,8 @@ public :
 
 				continue;
 			}
+
+
 
 			string stop = "STOP";
 			if(inst.getInst().find( stop) == 0){}
